@@ -1,4 +1,4 @@
-#Parallel and Distributed Computing 
+Parallel and Distributed Computing 
 Section W03 Fall Semester 2024
 Group 5
 Members:
