@@ -20,7 +20,8 @@ We created an SThread class that extends the original Thread class and includes 
 (Socket outSocket;)  are socket variables used for communicating with a destination 
 (int ind;) is the indext in the routing table
 
-A constructor is then created to initialize the SThread with respect to the Object [][] Table, Socket toClient, and int index variables, while also throwing an IO Exception in case the program cannot read the correct file. 
+A constructor is then created to initialize the SThread with respect to the Object [][] Table, Socket toClient, and int index variables,
+while also throwing an IO Exception in case the program cannot read the correct file. 
 
 A “run” method is created for the thread to operate each machine connected to the server router. The way it works is by initially recording the writing destination and displaying a message showing the data is being forwarded to said specific destination before the connection is successful. As each thread is being created, they are put to sleep for 10 seconds each using the “Thread.currentThread().sleep(10000)” method, ensuring the routing table is fully complete with all of the machine's information. Additionally, two loops are created; the first loop traverses through the routing table to find the destination effectively with respect to the socket information (once the destination is found, a new print writer is assigned), and the second loop is a communication loop that is meant to pass the input from the machine to the output string for the destination and will throw an IO exception if the program is unable to identify the socket information.
 
