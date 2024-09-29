@@ -1,5 +1,6 @@
 import java.io.*;
 import java.net.*;
+import java.util.Scanner;
 
 public class Client {
     public static void main(String[] args) throws IOException {
@@ -8,19 +9,26 @@ public class Client {
             A client uses the Socket class to initiate a connection to a server.*/
         
         Socket socket = new Socket("localhost", 4000);// Connect to Router on port 4000
-        PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-        BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+		Scanner scan = new Scanner(System.in);
+		PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+		BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-        /**Send message to Server via Router */
-        //String first_messageToSend = "client One,  Hello Server!";
-        String first_messageToSend = "From Client, Amdahl's law is an intuitive the observation that the performance improvement that can be gained through parallel processing is limited by the part of a system that's inherently sequential -- that is, the set of operations that must be run in series.";
-        out.println(first_messageToSend);
-        System.out.println("Client sent: " + first_messageToSend);
+		while(true) {
+			//Asks the user to input the message they wish to send then sends it to the Server
+			System.out.println("Please enter a message to send to the server. (Type EXIT to exit the Client Socket)");
+			String messageToSend = scan.nextLine();
+			out.println(messageToSend);
+			System.out.println("Client sent: " + messageToSend);
 
-        /**  Receive response from Server via Router**/
-        String response = in.readLine();
-        System.out.println("Client received: " + response + " via the Router");
-
+			/**  Receive response from Server via Router**/
+			String response = in.readLine();
+			System.out.println("Client received: " + response + " via the Router");
+			
+			// If the message is EXIT then the socket will close
+			if (messageToSend.equals("EXIT")){
+				break;
+			}
+		}
         // Close connection
         socket.close();
     }

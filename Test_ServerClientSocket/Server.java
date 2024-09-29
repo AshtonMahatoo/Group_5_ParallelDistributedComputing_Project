@@ -25,7 +25,9 @@ public class Server {
 
 
             /** Close socket connections */
-            clientSocket.close();
+            if(message.equals("EXIT")) {
+				clientSocket.close();
+			}
             
         }
     }
