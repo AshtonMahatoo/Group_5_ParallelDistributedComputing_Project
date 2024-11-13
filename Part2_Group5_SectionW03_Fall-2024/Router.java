@@ -4,7 +4,7 @@ import java.net.*;
 public class Router {
     public static void main(String[] args) throws IOException {
         ServerSocket routerSocket = new ServerSocket(4000); // Router listens on port 4000
-        System.out.println("*** Router started and waiting for client connection.... ***");
+        System.out.println("Router started and waiting for client connection...");
 
         while (true) {
             Socket clientSocket = routerSocket.accept(); // Wait for Client connection
@@ -18,14 +18,14 @@ public class Router {
 
             // Get message from Client
             String messageFromClient = clientIn.readLine();
-            System.out.println("**** ROUTER RECEIVED DATA MESSAGE!! **** " + messageFromClient + "**** FROM CLIENT!! **** ");
+            System.out.println("Router received: " + messageFromClient + " From Client!!");
 
             // Send message to Server
             serverOut.println(messageFromClient);
 
             // Get response from Server
             String responseFromServer = serverIn.readLine();
-            System.out.println("**** ROUTER RECEIVED DATA MESSAGE!! ****" + responseFromServer + "*** FROM SERVER!! ***");
+            System.out.println("Router received : " + responseFromServer + " From server!!");
 
             // Send response back to Client
             clientOut.println(responseFromServer);

@@ -13,15 +13,14 @@ public class Client {
 
         /**Send message to Server via Router */
         String first_messageToSend = "From Client, Amdahl's law is an intuitive the observation that the performance improvement that can be gained through parallel processing is limited by the part of a system that's inherently sequential -- that is, the set of operations that must be run in series.";
-       
+        
         
         out.println(first_messageToSend);
-        System.out.println("*** CLIENT SENT ****: " + first_messageToSend);
+        System.out.println("Client sent: " + first_messageToSend);
 
         long startTime = System.nanoTime();
 
         // Code to be timed
-
         long endTime = System.nanoTime();
         long duration = (endTime - startTime); 
 
@@ -35,7 +34,7 @@ public class Client {
         
         /**  Receive response from Server via Router**/
         String response = in.readLine();
-        System.out.println("**** CLIENT RECEIVED ****: " + response + " **** VIA THE ROUTER!! ****");
+        System.out.println("Client received: " + response + " via the Router");
 
         // Close connection
         socket.close();
