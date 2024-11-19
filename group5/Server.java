@@ -34,53 +34,23 @@ public class Server {
             int[][] resultThreadsCount5 = StrassenParallel.strassen(matrix, matrix,threadsCount5);
             int[][] resultThreadsCount7 = StrassenParallel.strassen(matrix, matrix,threadsCount7);
 
-            
-            // Process the matrix 
-            //********************** Thread Count One **************************************************************************************//
+            int doWhile = 1;
             System.out.println("This is the Thread # : " + threadsCount1 );
-            long startTime = System.nanoTime();
-            for (int[] row : resultThreadsCount1) {
-                for (int val : row) {
-                    System.out.print(val + " ,");         
+            do{
+                long startTime = System.nanoTime();
+                for (int[] row : resultThreadsCount1) {
+                    for (int val : row) {
+                        System.out.print(val + " ,");         
+                    }
+                    System.out.println();
                 }
-                System.out.println();
+                long endTime = System.nanoTime();
+                System.out.println("Total execution time: " + (endTime - startTime) + " nanoseconds");
+                doWhile++;
+    
             }
-            long endTime = System.nanoTime();
-            System.out.println("Total execution time: " + (endTime - startTime) + " nanoseconds");
+            while(doWhile < 25);
 
-            
-            //****************************Thread Count Three ********************************************************************************//
-            System.out.println("This is the Thread # : " + threadsCount3 );
-            
-            for (int[] row : resultThreadsCount3) {
-                for (int val : row) {
-                    System.out.print(val + " ,");         
-                }
-                System.out.println();
-            }
-
-
-            //****************************Thread Count 5 ********************************************************************************//
-            System.out.println("This is the Thread # : " + threadsCount5 );
-            
-            for (int[] row : resultThreadsCount5) {
-                for (int val : row) {
-                    System.out.print(val + " ,");         
-                }
-                System.out.println();
-            }
-
-
-            //****************************Thread Count 7 ********************************************************************************//
-            System.out.println("This is the Thread # : " + threadsCount7 );
-            
-            for (int[] row : resultThreadsCount7) {
-                for (int val : row) {
-                    System.out.print(val + " ,");         
-                }
-                System.out.println();
-            }
-            
 
             
         }
