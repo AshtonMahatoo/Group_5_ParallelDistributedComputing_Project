@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class Router {
     public static void main(String[] args) {
         try {
-            ServerSocket routerSocket = new ServerSocket(3000); // Router listens on port 4000
+            ServerSocket routerSocket = new ServerSocket(4000); // Router listens on port 4000
             System.out.println("Router started and waiting for client connection...");
 
             while (true) {

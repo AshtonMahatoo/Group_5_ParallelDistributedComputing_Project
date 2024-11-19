@@ -16,26 +16,23 @@ public class Client {
         return matrix;
     }
 
-    public static void main(String[] args) {
-
+    public static void communicateClientMatrices(int matrixCount, int matrixSize) {
         try {
-            Socket socket = new Socket("localhost", 3000);// Connect to Router on port 4000
+            Socket socket = new Socket("localhost", 4000);// Connect to Router on port 4000
             ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
 
 
             // Generate matrices
             ArrayList<int[][]> matrixList = new ArrayList<>();
 
-            int matrixCount = 2;
-            int matrixSize = 2;
-
             for (int i = 0; i < matrixCount; i++) {
                 matrixList.add(generateRandomMatrix(matrixSize));
             }
 
-            for (int i = 0; i < matrixList.size(); i++) {
-                System.out.println(Arrays.deepToString(matrixList.get(i)));
-            }
+            // Print Matrices to be multiplied (Currently Inactive)
+//            for (int i = 0; i < matrixList.size(); i++) {
+//                System.out.println(Arrays.deepToString(matrixList.get(i)));
+//            }
 
             long startTime = System.nanoTime();
 
@@ -50,8 +47,8 @@ public class Client {
             long endTime = System.nanoTime();
             long duration = (endTime - startTime);
 
-            // Print Array
-            System.out.println(Arrays.deepToString(resultantMatrix));
+            // Print Resultant Matrix (Currently Inactive)
+//             System.out.println(Arrays.deepToString(resultantMatrix));
 
             // Print the duration in nanoseconds
             System.out.println("Duration: " + duration + " nanoseconds");
@@ -67,5 +64,53 @@ public class Client {
         catch(Exception e) {
             System.out.println(e.getStackTrace());
         }
+    }
+
+
+    public static void main(String[] args) {
+        System.out.println("Given 2 matrices:");
+        int matrixCount = 2;
+        for (int i = 8; i < 128; i = i * 2) {
+            System.out.println("Of size " + i + ":");
+            communicateClientMatrices(matrixCount, i);
+            System.out.println();
+        }
+        System.out.println();
+
+        System.out.println("Given 4 matrices:");
+        matrixCount = 4;
+        for (int i = 8; i < 128; i = i * 2) {
+            System.out.println("Of size " + i + ":");
+            communicateClientMatrices(matrixCount, i);
+            System.out.println();
+        }
+        System.out.println();
+
+        System.out.println("Given 8 matrices:");
+        matrixCount = 8;
+        for (int i = 8; i < 128; i = i * 2) {
+            System.out.println("Of size " + i + ":");
+            communicateClientMatrices(matrixCount, i);
+            System.out.println();
+        }
+        System.out.println();
+
+        System.out.println("Given 16 matrices:");
+        matrixCount = 16;
+        for (int i = 8; i < 128; i = i * 2) {
+            System.out.println("Of size " + i + ":");
+            communicateClientMatrices(matrixCount, i);
+            System.out.println();
+        }
+        System.out.println();
+
+        System.out.println("Given 32 matrices:");
+        matrixCount = 32;
+        for (int i = 8; i < 128; i = i * 2) {
+            System.out.println("Of size " + i + ":");
+            communicateClientMatrices(matrixCount, i);
+            System.out.println();
+        }
+        System.out.println();
     }
 }

@@ -1,3 +1,6 @@
 .vscode
 .idea
 .DS_Store
+*.class
+Group_5_ParallelDistributedComputing_Project.iml
+*.iml
