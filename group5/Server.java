@@ -35,10 +35,10 @@ public class Server {
             int[][] resultThreadsCount7 = StrassenParallel.strassen(matrix, matrix,threadsCount7);
 
             int doWhile = 1;
-            System.out.println("This is the Thread # : " + threadsCount1 );
+            System.out.println("This is the Thread # : " + resultThreadsCount7 );
             do{
                 long startTime = System.nanoTime();
-                for (int[] row : resultThreadsCount1) {
+                for (int[] row : resultThreadsCount7) {
                     for (int val : row) {
                         System.out.print(val + " ,");         
                     }

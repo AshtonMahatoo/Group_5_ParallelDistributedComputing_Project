@@ -209,7 +209,7 @@ public class Client {
         try (Socket socket = new Socket("localhost", 5000);
              ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream())) {
 
-            out.writeObject(matrix16x16_2);
+            out.writeObject(matrix60x60);
         }
     }
 }
