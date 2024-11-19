@@ -5,6 +5,7 @@ import java.util.Arrays;
 
 public class Server {
 
+    // Outer wrapper that just pairs off matrices and feeds them to Strassen.multiply
     public static int[][] strassenHelper(ArrayList<int[][]> matrixList) {
         if (matrixList.size() == 1) {
             return matrixList.get(0);
@@ -48,6 +49,24 @@ public class Server {
 
         @Override
         public void run() {
+            //this.SerialMultiply();
+            this.ParallelMultiply();
+        }
+
+        private void ParallelMultiply(){
+            var r = new ParallelStrassen(matrixA, matrixB);
+            var t = new Thread(r);
+            t.start();
+            try {
+                t.join();
+            }
+            catch (Exception e){
+                
+            }
+            matrixC = r.matrixC;
+        }
+
+        private void SerialMultiply(){
             matrixC = Strassen.multiply(matrixA, matrixB);
         }
     }
@@ -63,10 +82,10 @@ public class Server {
                 ObjectInputStream in = new ObjectInputStream(routerSocket.getInputStream());
                 ObjectOutputStream out = new ObjectOutputStream(routerSocket.getOutputStream());
 
-                // Take in Matrix List
+                // Take in Matrix List -- this can be any number of matrices (10, 20, 50, etc)
                 ArrayList<int[][]> matrixList = (ArrayList<int[][]>) in.readObject();
 
-                // Perform algorithm, get resulting matrix
+                // StrassenHelper splits N matrices into N/2 pairs (recursively) and multiplies them together using Strassens
                 int[][] resultantMatrix = strassenHelper(matrixList);
 
                 // Give resultantMatrix to router

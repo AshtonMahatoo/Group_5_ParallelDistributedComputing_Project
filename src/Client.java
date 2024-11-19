@@ -66,51 +66,23 @@ public class Client {
         }
     }
 
+    private static void prettyPrintMatrixData(int matrixNum){
+        System.out.println("========== Given " + matrixNum + " matrices: ============");
+        int matrixCount = matrixNum;
+        for (int i = 8; i < 128; i = i * 2) {
+            System.out.println("Of size " + i + ":");
+            communicateClientMatrices(matrixCount, i);
+            System.out.println();
+        }
+        System.out.println();
+    }
+
 
     public static void main(String[] args) {
-        System.out.println("Given 2 matrices:");
-        int matrixCount = 2;
-        for (int i = 8; i < 128; i = i * 2) {
-            System.out.println("Of size " + i + ":");
-            communicateClientMatrices(matrixCount, i);
-            System.out.println();
-        }
-        System.out.println();
+        int[] matrixSizes = new int[] {8, 16, 64, 128, 256};
 
-        System.out.println("Given 4 matrices:");
-        matrixCount = 4;
-        for (int i = 8; i < 128; i = i * 2) {
-            System.out.println("Of size " + i + ":");
-            communicateClientMatrices(matrixCount, i);
-            System.out.println();
+        for (int m : matrixSizes){
+            prettyPrintMatrixData(m);
         }
-        System.out.println();
-
-        System.out.println("Given 8 matrices:");
-        matrixCount = 8;
-        for (int i = 8; i < 128; i = i * 2) {
-            System.out.println("Of size " + i + ":");
-            communicateClientMatrices(matrixCount, i);
-            System.out.println();
-        }
-        System.out.println();
-
-        System.out.println("Given 16 matrices:");
-        matrixCount = 16;
-        for (int i = 8; i < 128; i = i * 2) {
-            System.out.println("Of size " + i + ":");
-            communicateClientMatrices(matrixCount, i);
-            System.out.println();
-        }
-        System.out.println();
-
-        System.out.println("Given 32 matrices:");
-        matrixCount = 32;
-        for (int i = 8; i < 128; i = i * 2) {
-            System.out.println("Of size " + i + ":");
-            communicateClientMatrices(matrixCount, i);
-            System.out.println();
-        }
-        System.out.println();
     }
 }

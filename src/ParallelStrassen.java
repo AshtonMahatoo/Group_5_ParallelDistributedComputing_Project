@@ -1,12 +1,11 @@
 import java.util.ArrayList;
-import java.util.Arrays;
 
-public class Strassen implements Runnable {
+public class ParallelStrassen implements Runnable {
     int[][] matrixA;
     int[][] matrixB;
     volatile int[][] matrixC;
 
-    public Strassen(int[][] matrixA, int[][] matrixB) {
+    public ParallelStrassen(int[][] matrixA, int[][] matrixB) {
         this.matrixA = matrixA;
         this.matrixB = matrixB;
     }
@@ -17,10 +16,10 @@ public class Strassen implements Runnable {
 
     @Override
     public void run() {
-        matrixC = multiply(matrixA, matrixB);
+        this.matrixC = multiply(matrixA, matrixB);
     }
 
-    public int[][] multiply(int[][] A, int[][] B) {
+    public static int[][] multiply(int[][] A, int[][] B) {
 
         try {
             int n = A.length;
@@ -28,6 +27,7 @@ public class Strassen implements Runnable {
 
             if (n == 1) {
                 result[0][0] = A[0][0] * B[0][0];
+                return result;
             } else {
                 int newSize = n / 2;
 
@@ -41,17 +41,22 @@ public class Strassen implements Runnable {
                 int[][] B21 = MatrixUtils.split(B, newSize, 0, newSize);
                 int[][] B22 = MatrixUtils.split(B, newSize, newSize, newSize);
 
-                ArrayList<Strassen> runnables = new ArrayList<>();
-                runnables.add(new Strassen(MatrixUtils.add(A11, A22), MatrixUtils.add(B11, B22)));
-                runnables.add(new Strassen(MatrixUtils.add(A21, A22), B11));
-                runnables.add(new Strassen(A11, MatrixUtils.subtract(B12, B22)));
-                runnables.add(new Strassen(A22, MatrixUtils.subtract(B21, B11)));
-                runnables.add(new Strassen(MatrixUtils.add(A11, A12), B22));
-                runnables.add(new Strassen(MatrixUtils.subtract(A21, A11), MatrixUtils.add(B11, B12)));
-                runnables.add(new Strassen(MatrixUtils.subtract(A12, A22), MatrixUtils.add(B21, B22)));
+                ArrayList<ParallelStrassen> runnables = new ArrayList<>();
+
+                var M1_1 = MatrixUtils.add(A11, A22);
+                var M1_2 = MatrixUtils.add(B11, B22);
+                runnables.add(new ParallelStrassen(M1_1, M1_2));
+
+                
+                runnables.add(new ParallelStrassen(MatrixUtils.add(A21, A22), B11));
+                runnables.add(new ParallelStrassen(A11, MatrixUtils.subtract(B12, B22)));
+                runnables.add(new ParallelStrassen(A22, MatrixUtils.subtract(B21, B11)));
+                runnables.add(new ParallelStrassen(MatrixUtils.add(A11, A12), B22));
+                runnables.add(new ParallelStrassen(MatrixUtils.subtract(A21, A11), MatrixUtils.add(B11, B12)));
+                runnables.add(new ParallelStrassen(MatrixUtils.subtract(A12, A22), MatrixUtils.add(B21, B22)));
 
                 ArrayList<Thread> t = new ArrayList<>();
-                for (Strassen strassen : runnables) {
+                for (ParallelStrassen strassen : runnables) {
                     Thread thread = new Thread(strassen);
                     t.add(thread);
                     thread.start();
