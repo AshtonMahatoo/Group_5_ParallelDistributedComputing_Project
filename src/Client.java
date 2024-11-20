@@ -1,8 +1,6 @@
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
-import java.io.*;
-import java.util.Arrays;
 
 public class Client {
     // Method to generate random matrices
@@ -16,7 +14,7 @@ public class Client {
         return matrix;
     }
 
-    public static void communicateClientMatrices(int matrixCount, int matrixSize) {
+    public static long communicateClientMatrices(int matrixCount, int matrixSize, boolean useThreading) {
         try {
             Socket socket = new Socket("localhost", 4000);// Connect to Router on port 4000
             ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
@@ -29,19 +27,16 @@ public class Client {
                 matrixList.add(generateRandomMatrix(matrixSize));
             }
 
-            // Print Matrices to be multiplied (Currently Inactive)
-//            for (int i = 0; i < matrixList.size(); i++) {
-//                System.out.println(Arrays.deepToString(matrixList.get(i)));
-//            }
-
             long startTime = System.nanoTime();
 
             // Send matrices
-            out.writeObject(matrixList);
+            var wrapper = new MatrixListWrapper(matrixList, useThreading);
+            out.writeObject(wrapper);
             out.flush();
 
             ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
             // Receive resultantMatrix
+            @SuppressWarnings("unused")
             int[][] resultantMatrix = (int[][]) in.readObject();
 
             long endTime = System.nanoTime();
@@ -51,27 +46,40 @@ public class Client {
 //             System.out.println(Arrays.deepToString(resultantMatrix));
 
             // Print the duration in nanoseconds
-            System.out.println("Duration: " + duration + " nanoseconds");
+            //System.out.println("Duration: " + duration + " nanoseconds");
 
             // Convert to milliseconds
             long durationInMillis = duration / 1000000;
-            System.out.println("Duration: " + durationInMillis + " milliseconds");
+            System.out.println("*  Duration: " + durationInMillis + " milliseconds");
 
 
             // Close connection
             socket.close();
+            return durationInMillis;
         }
         catch(Exception e) {
-            System.out.println(e.getStackTrace());
+            System.out.println(e.getMessage());
         }
+        return -1;
     }
 
     private static void prettyPrintMatrixData(int matrixNum){
-        System.out.println("========== Given " + matrixNum + " matrices: ============");
-        int matrixCount = matrixNum;
-        for (int i = 8; i < 128; i = i * 2) {
-            System.out.println("Of size " + i + ":");
-            communicateClientMatrices(matrixCount, i);
+        int[] matrixSizes = new int[] {10, 20, 50, 100, 200};
+        System.out.println("===================== Given " + matrixNum + " matrices: ======================");
+        for (int i : matrixSizes) {
+            System.out.println("************************************");
+            System.out.println("*  Of size " + i + " (WITHOUT threading):");
+            var d1 = communicateClientMatrices(matrixNum, i, false);
+            System.out.println("*");
+
+            System.out.println("*  Of size " + i + " (WITH threading):");
+            var d2 = communicateClientMatrices(matrixNum, i, true);
+            System.out.println("*");
+
+            double speedup = (double)d2/d1;
+            System.out.println("*  Speedup: " + speedup);
+            System.out.println("*  Efficiency: " + speedup / (matrixNum - 1));
+            System.out.println("************************************");
             System.out.println();
         }
         System.out.println();
@@ -79,9 +87,9 @@ public class Client {
 
 
     public static void main(String[] args) {
-        int[] matrixSizes = new int[] {8, 16, 64, 128, 256};
+        int[] matrixCounts = new int[] {2, 4, 8, 16, 32};
 
-        for (int m : matrixSizes){
+        for (int m : matrixCounts){
             prettyPrintMatrixData(m);
         }
     }

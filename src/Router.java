@@ -1,10 +1,10 @@
 import java.io.*;
 import java.net.*;
-import java.util.ArrayList;
 
 public class Router {
     public static void main(String[] args) {
         try {
+            @SuppressWarnings("resource")
             ServerSocket routerSocket = new ServerSocket(4000); // Router listens on port 4000
             System.out.println("Router started and waiting for client connection...");
 

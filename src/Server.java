@@ -2,78 +2,86 @@ import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class Server {
 
+    private static ExecutorService Executor;
+
     // Outer wrapper that just pairs off matrices and feeds them to Strassen.multiply
-    public static int[][] strassenHelper(ArrayList<int[][]> matrixList) {
+    private static int[][] strassenHelper(ArrayList<int[][]> matrixList, boolean useThreading) {
         if (matrixList.size() == 1) {
             return matrixList.get(0);
         }
         try {
 
+            List<Future<?>> futures = new ArrayList<>();
+
             int matrixCount = (matrixList.size());
-            ArrayList<StrassenThread> threads = new ArrayList<>();
+            ArrayList<MatrixPair> matrixPairs = new ArrayList<>();
 
+            // Iterates through however many matrices are in matrixList and splits them into pairs
             for (int i = 0; i < matrixCount; i = i + 2) {
-                StrassenThread strassenThread = new StrassenThread(matrixList.get(i), matrixList.get(i + 1));
-                threads.add(strassenThread);
-            }
-            for (Thread thread : threads) {
-                thread.start();
-            }
-            for (Thread thread : threads) {
-                thread.join();
+                MatrixPair matrixPair = new MatrixPair(matrixList.get(i), matrixList.get(i + 1), useThreading);
+                matrixPairs.add(matrixPair);
             }
 
-            ArrayList<int[][]> results = new ArrayList<>();
-            for (StrassenThread thread : threads) {
-                results.add(thread.matrixC);
+            // Adds each matrixPair to the task pool and starts it running
+            for (Runnable pair : matrixPairs) {
+                Future<?> f = Executor.submit(pair);
+                futures.add(f);
             }
-            return strassenHelper(results);
+            
+            // Waits for all tasks to finish
+            for (Future<?> f : futures) {
+                f.get();
+            }
+
+            // We now have half as many matrices as we started with, repeat
+            ArrayList<int[][]> results = new ArrayList<>();
+            for (MatrixPair pair : matrixPairs) {
+                results.add(pair.matrixC);
+            }
+            return strassenHelper(results, useThreading);
         } catch (Exception e) {
 
         }
         return null;
     }
 
-    public static class StrassenThread extends Thread {
+
+    private static class MatrixPair implements Runnable {
         int[][] matrixA;
         int[][] matrixB;
+        boolean UseThreading;
         volatile int[][] matrixC;
 
-        public StrassenThread(int[][] matrixA, int[][] matrixB){
+        public MatrixPair(int[][] matrixA, int[][] matrixB, boolean useThreading){
             this.matrixA = matrixA;
             this.matrixB = matrixB;
+            this.UseThreading = useThreading;
         }
 
         @Override
         public void run() {
-            //this.SerialMultiply();
-            this.ParallelMultiply();
-        }
-
-        private void ParallelMultiply(){
-            var r = new ParallelStrassen(matrixA, matrixB);
-            var t = new Thread(r);
-            t.start();
-            try {
-                t.join();
+            try{
+                matrixC = StrassenParallel.strassen(matrixA, matrixB, UseThreading);
             }
             catch (Exception e){
-                
-            }
-            matrixC = r.matrixC;
-        }
 
-        private void SerialMultiply(){
-            matrixC = Strassen.multiply(matrixA, matrixB);
+            }
         }
     }
 
     public static void main(String[] args) {
+        
+
         try {
 
+            @SuppressWarnings("resource")
             ServerSocket serverSocket = new ServerSocket(5000); // Server listens on port 5000
             System.out.println("Server started and waiting for client connection...");
 
@@ -83,10 +91,12 @@ public class Server {
                 ObjectOutputStream out = new ObjectOutputStream(routerSocket.getOutputStream());
 
                 // Take in Matrix List -- this can be any number of matrices (10, 20, 50, etc)
-                ArrayList<int[][]> matrixList = (ArrayList<int[][]>) in.readObject();
+                MatrixListWrapper wrapper = (MatrixListWrapper) in.readObject();
+                int cores = wrapper.MatrixList.size() - 1;
+                Executor = Executors.newFixedThreadPool(cores);
 
                 // StrassenHelper splits N matrices into N/2 pairs (recursively) and multiplies them together using Strassens
-                int[][] resultantMatrix = strassenHelper(matrixList);
+                int[][] resultantMatrix = strassenHelper(wrapper.MatrixList, wrapper.UseThreading);
 
                 // Give resultantMatrix to router
                 out.writeObject(resultantMatrix);
